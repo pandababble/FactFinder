@@ -1,0 +1,655 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fact Finders (Copy)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Layout: a bright workbook page — mission card on the left, the staircase addition chart on the right; stacks on phones */
+:root{
+  --paper:#F2F7FF;      /* page */
+  --sheet:#FFFFFF;      /* panels */
+  --ink:#1D2752;        /* text */
+  --ink-soft:#56608A;
+  --line:#C9D6EE;
+  --crayon-yellow:#FFD23F;
+  --crayon-orange:#FF8A3D;
+  --teal:#18A999;
+  --berry:#E0457B;
+  --sky:#3D7BE0;
+  --cell:#F7FAFF;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Andika","Comic Sans MS",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed;background-position:-1px -1px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px;display:flex;flex-direction:column;gap:24px}
+header.top{background:var(--ink);color:#fff;border-radius:22px;padding:18px 22px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;box-shadow:0 6px 0 #0f1636}
+header.top h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1;margin:0;letter-spacing:.5px}
+header.top h1 span{color:var(--crayon-yellow)}
+header.top p{margin:4px 0 0;color:#C8D2F5;font-size:16px}
+.name{display:flex;align-items:center;gap:8px;font-weight:700}
+.name input{font:inherit;font-size:20px;border:0;border-bottom:3px dashed var(--crayon-yellow);background:transparent;color:#fff;width:180px;padding:2px 4px}
+.name input:focus{outline:none;border-bottom-style:solid}
+.tabs{display:flex;gap:10px;flex-wrap:wrap}
+.tabbtn{font-family:var(--display);font-weight:800;font-size:20px;border:3px solid var(--ink);background:var(--sheet);color:var(--ink);border-radius:999px;padding:6px 18px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.tabbtn[aria-selected="true"]{background:var(--crayon-yellow)}
+.tabbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+section.part{display:flex;flex-direction:column;gap:16px}
+.part-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.part-head h2{font-family:var(--display);font-weight:800;font-size:32px;margin:0;line-height:1.1}
+.part-head p{margin:0;color:var(--ink-soft)}
+.board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px;align-items:start}
+@media (max-width:880px){.board{grid-template-columns:1fr}}
+.panel{background:var(--sheet);border:3px solid var(--ink);border-radius:24px;padding:20px;box-shadow:0 6px 0 var(--ink);min-width:0}
+/* mission picker */
+.mpick{display:flex;gap:10px;flex-wrap:wrap}
+.mbtn{font-family:var(--display);font-weight:800;font-size:22px;min-width:84px;padding:6px 12px;border-radius:14px;border:3px solid var(--ink);background:var(--cell);color:var(--ink);cursor:pointer;position:relative}
+.mbtn[aria-current="true"]{background:var(--crayon-yellow)}
+.mbtn.done::after{content:"✓";position:absolute;top:-10px;right:-10px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-size:16px;display:grid;place-items:center;border:2px solid var(--ink)}
+/* flash card */
+.flash{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.card{font-family:var(--display);font-weight:800;font-size:56px;line-height:1;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:14px 26px;box-shadow:6px 6px 0 var(--sky);transform:rotate(-2deg);min-width:170px;text-align:center}
+.card.orange{box-shadow:6px 6px 0 var(--crayon-orange)}
+/* number bond */
+.bond{display:grid;grid-template-columns:auto 50px auto;grid-template-rows:auto auto;align-items:center;column-gap:0;row-gap:16px;position:relative}
+.bond .b{width:64px;height:64px;border:3px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:32px;background:#fff}
+.bond .whole{grid-row:1/3;grid-column:1;width:74px;height:74px}
+.bond .p1{grid-row:1;grid-column:3}.bond .p2{grid-row:2;grid-column:3}
+.bond svg{grid-row:1/3;grid-column:2;width:50px;height:100%}
+.bond .b.lit{background:var(--crayon-yellow)}
+.bond .b.lit-o{background:var(--crayon-orange);color:#fff}
+.bond .b.q{color:var(--ink-soft)}
+.bond .b.empty{border-style:dashed;background:var(--cell)}
+.bond input.b.blank{border-radius:50%;border-width:3px}
+.bond input.b{text-align:center;color:var(--ink);padding:0}
+/* steps */
+.steps{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:14px;color:var(--ink-soft)}
+.steps li .dot{flex:none;width:30px;height:30px;border-radius:50%;border:3px solid var(--line);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:16px}
+.steps li.now{background:#FFF6D1;color:var(--ink);font-weight:700}
+.steps li.now .dot{border-color:var(--ink);background:var(--crayon-yellow)}
+.steps li.ok .dot{background:var(--teal);border-color:var(--teal);color:#fff}
+.work{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.pad{display:flex;flex-wrap:wrap;gap:8px}
+.pad button{font-family:var(--display);font-weight:800;font-size:24px;width:52px;height:52px;border-radius:14px;border:3px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.pad button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.sent{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:30px;flex-wrap:wrap}
+.blank{width:62px;height:56px;font:inherit;font-size:28px;text-align:center;border:3px dashed var(--sky);border-radius:12px;background:#fff;color:var(--ink)}
+.blank:focus{outline:none;border-style:solid;background:#EEF4FF}
+.blank.right{border:3px solid var(--teal);background:#E2F7F3}
+.blank.wrong{border:3px solid var(--berry);background:#FDE7EF}
+.btn{font-family:var(--display);font-weight:800;font-size:22px;border:3px solid var(--ink);border-radius:16px;padding:8px 22px;cursor:pointer;background:var(--teal);color:#fff;box-shadow:0 4px 0 var(--ink);align-self:flex-start}
+.btn.alt{background:#fff;color:var(--ink)}
+.btn.big{font-size:28px;padding:12px 30px;background:var(--crayon-orange)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.say{min-height:28px;font-weight:700;font-size:19px}
+.say.good{color:#0E7F72}.say.bad{color:var(--berry)}
+.stamp{font-family:var(--display);font-weight:800;font-size:34px;color:var(--berry);border:4px solid var(--berry);border-radius:14px;padding:4px 16px;transform:rotate(-6deg);display:inline-block;animation:stamp .35s ease-out}
+@keyframes stamp{from{transform:scale(2) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(-6deg);opacity:1}}
+/* addition chart */
+.chart-wrap{overflow-x:auto}
+.chart-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.chart-title h3{margin:0;font-family:var(--display);font-size:24px}
+.legend{font-size:15px;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
+.legend i{width:18px;height:18px;border-radius:5px;border:2px solid var(--ink);display:inline-block}
+.chart{display:grid;grid-template-columns:repeat(10,minmax(32px,1fr));gap:4px;min-width:330px}
+.cell{position:relative;aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);border-radius:9px;background:var(--cell);color:var(--ink);font-family:var(--display);font-weight:600;font-size:clamp(11px,1.45vw,17px);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:0;line-height:1.05;transition:background .2s,transform .15s}
+.cell:hover{border-color:var(--ink)}
+.cell:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.cell .tot{font-weight:800;font-size:1.05em;display:none}
+.cell.yellow{background:var(--crayon-yellow);border-color:var(--ink)}
+.cell.orange{background:var(--crayon-orange);border-color:var(--ink);color:#fff}
+.cell.yellow .tot,.cell.orange .tot{display:block}
+.cell.hint{box-shadow:inset 0 0 0 3px var(--sky)}
+.cell.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-3px)}}
+.cell.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.18)}}
+.notice{margin-top:14px;padding:14px;border-radius:16px;background:#E8F1FF;border:2px dashed var(--sky)}
+.notice h4{margin:0 0 6px;font-family:var(--display);font-size:22px}
+/* card draw */
+.deckrow{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.deck{position:relative;width:150px;height:110px;flex:none}
+.deck span{position:absolute;inset:0;border:3px solid var(--ink);border-radius:14px;background:repeating-linear-gradient(45deg,var(--crayon-orange) 0 10px,#FFA466 10px 20px)}
+.deck span:nth-child(1){transform:translate(8px,8px) rotate(4deg)}
+.deck span:nth-child(2){transform:translate(4px,4px) rotate(2deg)}
+.deck b{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-size:14px;color:var(--ink-soft)}
+.flip{animation:flip .45s ease-out}
+@keyframes flip{from{transform:rotateY(90deg) rotate(-2deg)}to{transform:rotateY(0) rotate(-2deg)}}
+.stars{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.stars svg{width:34px;height:34px}
+.log{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.log .chip{background:#fff;border:2px solid var(--ink);border-radius:12px;padding:4px 12px;font-family:var(--display);font-weight:800;font-size:18px}
+.bondrow{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+.waitbox{display:flex;flex-direction:column;gap:4px;background:#FFF6D1;border:3px dashed var(--ink);border-radius:18px;padding:16px 18px;font-size:19px}
+.waitbox b{font-family:var(--display);font-size:26px;line-height:1.1}
+.mbtn:disabled{opacity:.35;cursor:not-allowed}
+.livechip{background:var(--teal);color:#fff;border-radius:999px;padding:4px 14px;font-weight:700;font-size:15px}
+.confetti{position:fixed;width:12px;height:14px;top:-20px;z-index:50;border-radius:3px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="studentView">
+  <header class="top">
+    <div>
+      <h1>Fact <span>Finders</span></h1>
+      <p>Use the addition chart to solve subtraction!</p>
+    </div>
+    <span class="livechip" id="sLive" hidden>Following your teacher</span>
+    <label class="name">Name <input id="kidname" autocomplete="off" placeholder="your name"></label>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tabbtn" role="tab" id="tab-m" aria-selected="true" aria-controls="sec-m">Missions</button>
+    <button class="tabbtn" role="tab" id="tab-p" aria-selected="false" aria-controls="sec-p">Card Draw</button>
+  </div>
+
+  <!-- MISSIONS -->
+  <section class="part" id="sec-m" role="tabpanel" aria-labelledby="tab-m">
+    <div class="part-head">
+      <h2>Subtraction Missions</h2>
+      <p>Solve each card with the help of your addition chart. Color with yellow!</p>
+    </div>
+    <div class="board">
+      <div class="panel">
+        <div class="mpick" id="mpick"></div>
+        <div style="height:18px"></div>
+        <div class="flash">
+          <div class="card" id="mcard">7 − 4</div>
+          <div class="bond" id="mbond"></div>
+        </div>
+        <ol class="steps" id="msteps"></ol>
+        <div class="work" id="mwork"></div>
+        <div class="say" id="msay" aria-live="polite"></div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">
+          <h3>My Addition Chart</h3>
+          <span class="legend"><i style="background:var(--crayon-yellow)"></i> facts that helped me</span>
+        </div>
+        <div class="chart-wrap"><div class="chart" id="mchart"></div></div>
+        <div class="notice" id="mnotice" hidden>
+          <h4>Look at your yellow squares!</h4>
+          <p style="margin:0 0 10px">What shape do they make? How did solving one card help you solve the next?</p>
+          <button class="btn alt" id="shapeBtn">Show me</button>
+          <p id="shapeAns" hidden style="margin:10px 0 0;font-weight:700">A cross! 7 − 4, 8 − 4, 9 − 4 and 9 − 5 all live right next to each other. The total goes up 1 each time you move one square.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM SET -->
+  <section class="part" id="sec-p" role="tabpanel" aria-labelledby="tab-p" hidden>
+    <div class="panel waitbox" id="pLock" hidden><b>Card Draw is coming soon!</b><span>Your teacher will tell you when it's time to pick cards.</span></div>
+    <div class="part-head">
+      <h2>Card Draw</h2>
+      <p>Pick a card. Find the addition fact on the chart and shade it orange. Write the subtraction sentence and a number bond. Do at least 6!</p>
+    </div>
+    <div class="board">
+      <div class="panel">
+        <div class="deckrow">
+          <div class="deck" aria-hidden="true"><span></span><span></span><span></span><b id="left">66 cards left</b></div>
+          <div class="card orange" id="pcard" hidden></div>
+          <button class="btn big" id="drawBtn">Pick a card</button>
+        </div>
+        <ol class="steps" id="psteps" hidden></ol>
+        <div class="work" id="pwork"></div>
+        <div class="say" id="psay" aria-live="polite"></div>
+        <div style="margin-top:18px;display:flex;flex-direction:column;gap:8px">
+          <div class="stars" id="stars" aria-label="turns finished"></div>
+          <div class="log" id="plog"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="chart-title">
+          <h3>My Addition Chart</h3>
+          <span class="legend"><i style="background:var(--crayon-orange)"></i> facts I shaded</span>
+        </div>
+        <div class="chart-wrap"><div class="chart" id="pchart"></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="teacherHost" hidden></div>
+<script>
+const $=s=>document.querySelector(s);
+const MINUS="−";
+function el(tag,attrs={},html=""){const e=document.createElement(tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html)e.innerHTML=html;return e;}
+function cellsFor(w,k,d){const c=[];if(k>=1)c.push([k,d]);if(d>=1&&d!==k)c.push([d,k]);return c;}
+function confetti(n=40){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cols=['#FFD23F','#FF8A3D','#18A999','#E0457B','#3D7BE0'];
+  for(let i=0;i<n;i++){const c=el('div',{class:'confetti'});c.style.left=Math.random()*100+'vw';c.style.background=cols[i%5];c.style.animationDuration=(1.2+Math.random()*1.4)+'s';c.style.animationDelay=(Math.random()*.3)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3200);}
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tabbtn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabbtn').forEach(x=>x.setAttribute('aria-selected',x===b));
+  $('#sec-m').hidden=b.id!=='tab-m';$('#sec-p').hidden=b.id!=='tab-p';
+});
+try{const n=localStorage.getItem('ff-name');if(n)$('#kidname').value=n;}catch(e){}
+$('#kidname').addEventListener('input',e=>{try{localStorage.setItem('ff-name',e.target.value)}catch(_){}});
+
+/* ---------- chart ---------- */
+function buildChart(root,onTap){
+  const map={};
+  for(let a=1;a<=10;a++)for(let b=0;b<=10-a;b++){
+    const c=el('button',{class:'cell',type:'button','aria-label':`${a} plus ${b}`},`<span>${a} + ${b}</span><span class="tot">= ${a+b}</span>`);
+    c.style.gridRow=a;c.style.gridColumn=b+1;
+    c.onclick=()=>onTap(a,b,c);
+    root.appendChild(c);map[a+','+b]=c;
+  }
+  return map;
+}
+function bondHTML(whole,p1,p2,opts={}){
+  const cls=v=>v==='?'?'b q':'b';
+  return `<div class="${cls(whole)} whole ${opts.wl||''}">${whole}</div>
+  <svg viewBox="0 0 50 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="50" x2="50" y2="22" stroke="#1D2752" stroke-width="3"/><line x1="0" y1="50" x2="50" y2="78" stroke="#1D2752" stroke-width="3"/></svg>
+  <div class="${cls(p1)} p1">${p1}</div><div class="${cls(p2)} p2 ${opts.p2l||''}">${p2}</div>`;
+}
+function stepsHTML(list,now){return list.map((t,i)=>`<li class="${i<now?'ok':i===now?'now':''}"><span class="dot">${i<now?'✓':i+1}</span><span>${t}</span></li>`).join('');}
+function blank(id){return `<input class="blank" id="${id}" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="answer">`;}
+function val(id){const v=$('#'+id).value.trim();return v===''?NaN:Number(v);}
+function mark(id,ok){const e=$('#'+id);e.classList.remove('right','wrong');e.classList.add(ok?'right':'wrong');return ok;}
+
+/* ---------- missions ---------- */
+const MIS=[{w:7,k:4,d:3},{w:8,k:4,d:4},{w:9,k:4,d:5},{w:9,k:5,d:4}];
+MIS.forEach(m=>{m.cells=cellsFor(m.w,m.k,m.d);m.phase=0;m.found=new Set();});
+const DONE=5;
+let mi=0;
+const mYellow=new Set();
+const mmap=buildChart($('#mchart'),tapMission);
+const BLINES=`<svg viewBox="0 0 50 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="50" x2="50" y2="22" stroke="#1D2752" stroke-width="3"/><line x1="0" y1="50" x2="50" y2="78" stroke="#1D2752" stroke-width="3"/></svg>`;
+function bbox(cls,v,id,label){return id?`<input class="b ${cls} blank" id="${id}" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="${label}">`:`<div class="b ${cls}${v===''?' empty':''}">${v}</div>`;}
+
+function renderPick(){
+  const p=$('#mpick');p.innerHTML='';
+  MIS.forEach((m,i)=>{const b=el('button',{class:'mbtn'+(m.phase===DONE?' done':''),'aria-current':i===mi},`${m.w} ${MINUS} ${m.k}`);if(allowed(i)<0)b.disabled=true;b.onclick=()=>{mi=i;renderMission();};p.appendChild(b);});
+}
+function paintM(){
+  const m=MIS[mi];const showParts=m.phase===2;
+  for(const key in mmap){
+    const[a,b]=key.split(',').map(Number);
+    mmap[key].classList.toggle('yellow',mYellow.has(key));
+    mmap[key].classList.toggle('hint',showParts&&(a===m.k||b===m.k));
+  }
+}
+function renderMission(msg='',cls='good'){
+  const m=MIS[mi];renderPick();paintM();
+  $('#mcard').textContent=`${m.w} ${MINUS} ${m.k}`;
+  const bd=$('#mbond');
+  if(m.phase===0) bd.innerHTML=bbox('whole','', 'bw','whole')+BLINES+bbox('p1','','bk','known part')+bbox('p2','');
+  else if(m.phase===3) bd.innerHTML=bbox('whole',m.w)+BLINES+bbox('p1',m.k)+bbox('p2','','bm','missing part');
+  else bd.innerHTML=bbox('whole',m.w)+BLINES+bbox('p1',m.k)+bbox('p2'+(m.phase>3?' lit':''),m.phase>3?m.d:'');
+  $('#msteps').innerHTML=stepsHTML([
+    `Write a number bond. Put in the <b>whole</b> and the <b>known part</b>. Leave the missing part empty for now.`,
+    `Which squares on your chart have a part that is <b>${m.k}</b>? Tap one!`,
+    `Which of those have the same total as <b>${m.w} ${MINUS} ${m.k}</b>? Tap ${m.cells.length>1?'them':'it'} to color yellow.`,
+    `Fill in the missing part of your number bond.`,
+    `Write the subtraction sentence from the card and the addition sentence that helped.`
+  ],m.phase);
+  const w=$('#mwork');w.innerHTML='';
+  const al=allowed(mi);
+  if(al<0){
+    $('#mcard').textContent='?';bd.innerHTML=bbox('whole','')+BLINES+bbox('p1','')+bbox('p2','');
+    $('#msteps').innerHTML='';
+    w.innerHTML=`<div class="waitbox"><b>Eyes on the board!</b><span>We'll start this together. Get your yellow crayon ready.</span></div>`;
+    $('#mnotice').hidden=true;say('msay','','');return;
+  }
+  if(m.phase>al&&m.phase<DONE){
+    w.innerHTML=`<div class="waitbox"><b>Nice work! Wait for your teacher.</b><span>Look up at the board. We'll do the next step together.</span></div>`;
+    $('#mnotice').hidden=true;say('msay',msg,msg?cls:'');return;
+  }
+  if(m.phase===0){
+    w.innerHTML=`<button class="btn" id="bcheck">Check my bond</button>`;
+    $('#bcheck').onclick=()=>{
+      const ok=mark('bw',val('bw')===m.w)&mark('bk',val('bk')===m.k);
+      if(ok){m.phase=1;renderMission(`Yes! The whole is ${m.w}. The part we know is ${m.k}.`);}
+      else say('msay',`Look at the card. The whole is the first number. The known part is the number we take away.`,'bad');
+    };
+    setTimeout(()=>$('#bw')&&$('#bw').focus(),50);
+  }else if(m.phase===1){
+    w.innerHTML=`<div>Look across the rows and down the columns. Talk with your partner!</div>`;
+  }else if(m.phase===2){
+    w.innerHTML=`<div>Colored <b>${m.found.size}</b> of <b>${m.cells.length}</b>. The chart shows the parts, not the totals. Think: which parts make ${m.w}?</div>`;
+  }else if(m.phase===3){
+    w.innerHTML=`<button class="btn" id="mcheckm">Check</button>`;
+    $('#mcheckm').onclick=()=>{
+      if(mark('bm',val('bm')===m.d)){m.phase=4;renderMission(`Yes! ${m.w} is ${m.k} and ${m.d}.`);setTimeout(()=>$('#ms1')&&$('#ms1').focus(),50);}
+      else say('msay',`Look at your yellow square. ${m.k} and what make ${m.w}?`,'bad');
+    };
+    setTimeout(()=>$('#bm')&&$('#bm').focus(),50);
+  }else if(m.phase===4){
+    w.innerHTML=`<div class="sent">${blank('ms1')} ${MINUS} ${blank('ms2')} = ${blank('ms3')}</div>
+      <div class="sent">${blank('ma1')} + ${blank('ma2')} = ${blank('ma3')}</div>
+      <button class="btn" id="mcheck">Check my work</button>`;
+    $('#mcheck').onclick=()=>{
+      let ok=mark('ms1',val('ms1')===m.w)&mark('ms2',val('ms2')===m.k)&mark('ms3',val('ms3')===m.d);
+      const a1=val('ma1'),a2=val('ma2');
+      const addOk=(a1===m.k&&a2===m.d)||(a1===m.d&&a2===m.k);
+      ok=ok&mark('ma1',addOk)&mark('ma2',addOk)&mark('ma3',val('ma3')===m.w);
+      if(ok){m.phase=DONE;confetti();renderMission();}
+      else say('msay',`Almost! Fix the pink boxes. Start with the card: ${m.w} ${MINUS} ${m.k}.`,'bad');
+    };
+  }else{
+    w.innerHTML=`<div class="sent">${m.w} ${MINUS} ${m.k} = ${m.d}</div><div class="sent">${m.cells.map(([a,b])=>`${a} + ${b} = ${m.w}`).join('<span style="color:var(--ink-soft);font-size:20px;padding:0 6px">and</span>')}</div>
+      <div><span class="stamp">Solved!</span></div>`;
+    const next=MIS.findIndex(x=>x.phase<DONE);
+    if(next>=0){const b=el('button',{class:'btn'},`Next card: ${MIS[next].w} ${MINUS} ${MIS[next].k}`);b.onclick=()=>{mi=next;renderMission();};w.appendChild(b);}
+    else{const b=el('button',{class:'btn'},`Go to Card Draw`);b.onclick=()=>$('#tab-p').click();w.appendChild(b);}
+  }
+  $('#mnotice').hidden=!MIS.every(x=>x.phase===DONE)||(LIVE&&LIVE.kind==='prob');
+  say('msay',msg,msg?cls:'');
+}
+function shake(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),400);}
+function tapMission(a,b,c){
+  const m=MIS[mi];
+  if(m.phase>allowed(mi)&&m.phase<DONE||allowed(mi)<0){shake(c);say('msay','Wait for your teacher!','');return;}
+  if(m.phase===1){
+    if(a===m.k||b===m.k){m.phase=2;renderMission(`Yes! All the squares in the row that starts with ${m.k} + 0 and the column that starts with 1 + ${m.k} have a part of ${m.k}. They're outlined in blue.`);}
+    else{shake(c);say('msay',`${a} + ${b} doesn't have a ${m.k}. Try again!`,'bad');}
+    return;
+  }
+  if(m.phase!==2){shake(c);if(m.phase===0)say('msay','Write your number bond first!','bad');return;}
+  const hit=m.cells.some(([x,y])=>x===a&&y===b);
+  if(hit){
+    const key=a+','+b;
+    if(m.found.has(key)){say('msay','You already colored that one!','');return;}
+    m.found.add(key);mYellow.add(key);c.classList.add('pop');setTimeout(()=>c.classList.remove('pop'),400);
+    if(m.found.size===m.cells.length){
+      m.phase=3;
+      const already=m.cells.every(([x,y])=>MIS.some((o,i)=>i!==mi&&o.phase>=3&&o.cells.some(([p,q])=>p===x&&q===y)));
+      renderMission(m.cells.length===1?`You found it! ${a} + ${b} = ${m.w}. A double only has one square.`:already?`You found them! Hey, these were already yellow from another card!`:`You found both! They both make ${m.w}.`);
+    }else renderMission(`Yes! ${a} + ${b} = ${a+b}. Can you find one more?`);
+  }else{
+    shake(c);
+    if(a!==m.k&&b!==m.k)say('msay',`Look in the blue squares. They have a part of ${m.k}.`,'bad');
+    else say('msay',`${a} + ${b} makes ${a+b}. We need ${m.w}!`,'bad');
+  }
+}
+function say(id,t,cls){const s=$('#'+id);s.textContent=t;s.className='say '+(cls||'');}
+$('#shapeBtn').onclick=()=>{$('#shapeAns').hidden=false;confetti(25);};
+renderMission();
+
+/* ---------- card draw (problem set) ---------- */
+const CARDS=["6-4","9-1","5-2","10-4","9-7","4-3","8-3","7-1","3-2","9-8","4-1","8-7","10-2","7-3","9-5","5-0","10-7","7-2","9-3","5-4","6-5","8-0","3-1","6-2","10-10","9-2","8-6","4-4","1-1","4-2","7-0","7-6","7-4","9-9","4-0","5-1","2-1","5-3","0-0","10-0","8-1","3-3","6-3","10-1","8-2","10-8","6-1","7-7","1-0","5-5","6-0","10-9","8-4","10-3","6-6","10-6","9-6","10-5","3-0","2-2","2-0","7-5","8-5","8-8","9-0","9-4"];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let deck=shuffle(CARDS.slice()),cur=null;
+const orange=new Set(),plog=[];
+const pmap=buildChart($('#pchart'),tapCard);
+
+function paintP(){for(const k in pmap)pmap[k].classList.toggle('orange',orange.has(k));}
+function renderStars(){
+  const s=$('#stars');s.innerHTML='<b style="margin-right:6px">Turns:</b>';
+  const n=Math.max(6,plog.length);
+  for(let i=0;i<n;i++){s.insertAdjacentHTML('beforeend',`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6 5.7 21.1l1.5-7L2 9.3l7-.8z" fill="${i<plog.length?'#FFD23F':'#fff'}" stroke="#1D2752" stroke-width="1.8" stroke-linejoin="round"/></svg>`);}
+  if(plog.length>=6)s.insertAdjacentHTML('beforeend',`<b style="color:var(--teal);margin-left:6px">${plog.length===6?'You did 6! Keep going if you want!':plog.length+' cards!'}</b>`);
+  $('#plog').innerHTML=plog.map(t=>`<span class="chip">${t}</span>`).join('');
+  $('#left').textContent=`${deck.length} card${deck.length===1?'':'s'} left`;
+}
+function draw(){
+  if(!deck.length)deck=shuffle(CARDS.slice());
+  const [w,k]=deck.pop().split('-').map(Number);
+  cur={w,k,d:w-k,phase:0,cells:cellsFor(w,k,w-k)};
+  if(!cur.cells.length)cur.phase=1;
+  const c=$('#pcard');c.hidden=false;c.textContent=`${w} ${MINUS} ${k}`;c.classList.remove('flip');void c.offsetWidth;c.classList.add('flip');
+  $('#drawBtn').hidden=true;
+  renderCard(cur.phase===1?`0 + 0 isn't on our chart! It's a zero mystery. Just write the sentence and bond.`:'');
+}
+function renderCard(msg=''){
+  paintP();renderStars();
+  const st=$('#psteps'),w=$('#pwork');
+  if(!cur){st.hidden=true;w.innerHTML='';return;}
+  st.hidden=false;
+  st.innerHTML=stepsHTML([`Find the related addition fact on the chart and shade it orange.`,`Write the subtraction sentence and a number bond to match.`],cur.phase);
+  w.innerHTML='';
+  if(cur.phase===0){w.innerHTML=`<div>Tap a square on the chart that makes <b>${cur.w}</b> and has a part of <b>${cur.k}</b>.</div>`;}
+  else if(cur.phase===1){
+    w.innerHTML=`<div class="bondrow"><div class="sent">${blank('ps1')} ${MINUS} ${blank('ps2')} = ${blank('ps3')}</div>
+      <div class="bond"><input class="b whole" id="pb1" inputmode="numeric" maxlength="2" aria-label="whole"><svg viewBox="0 0 50 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="50" x2="50" y2="22" stroke="#1D2752" stroke-width="3"/><line x1="0" y1="50" x2="50" y2="78" stroke="#1D2752" stroke-width="3"/></svg><input class="b p1" id="pb2" inputmode="numeric" maxlength="2" aria-label="part"><input class="b p2" id="pb3" inputmode="numeric" maxlength="2" aria-label="part"></div></div>
+      <button class="btn" id="pcheck">Check my work</button>`;
+    $('#pcheck').onclick=checkCard;
+    setTimeout(()=>$('#ps1').focus(),50);
+  }else{
+    w.innerHTML=`<div class="bondrow"><div class="sent">${cur.w} ${MINUS} ${cur.k} = ${cur.d}</div><div class="bond">${bondHTML(cur.w,cur.k,cur.d,{wl:'lit-o'})}</div></div><div><span class="stamp">Great job!</span></div>`;
+    const b=el('button',{class:'btn big'},'Pick another card');b.onclick=draw;w.appendChild(b);
+  }
+  say('psay',msg,msg?(msg.startsWith('0 + 0')?'':'good'):'');
+}
+function checkCard(){
+  const{w,k,d}=cur;
+  let ok=mark('ps1',val('ps1')===w)&mark('ps2',val('ps2')===k)&mark('ps3',val('ps3')===d);
+  const b2=val('pb2'),b3=val('pb3');
+  const partsOk=(b2===k&&b3===d)||(b2===d&&b3===k);
+  ok=ok&mark('pb1',val('pb1')===w)&mark('pb2',partsOk)&mark('pb3',partsOk);
+  if(ok){cur.phase=2;plog.push(`${w} ${MINUS} ${k} = ${d}`);if(plog.length===6)confetti(70);else confetti(20);renderCard();}
+  else say('psay','Almost! Fix the pink boxes. The whole is the biggest number.','bad');
+}
+function tapCard(a,b,c){
+  if(!cur||cur.phase!==0){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),400);if(!cur)say('psay','Pick a card first!','bad');return;}
+  const hit=cur.cells.some(([x,y])=>x===a&&y===b);
+  if(hit){
+    orange.add(a+','+b);c.classList.add('pop');setTimeout(()=>c.classList.remove('pop'),400);
+    cur.phase=1;renderCard(`Yes! ${a} + ${b} = ${cur.w}. Now write it down.`);
+  }else{
+    c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),400);
+    say('psay',a+b!==cur.w?`${a} + ${b} makes ${a+b}. We need ${cur.w}!`:`${a} + ${b} makes ${cur.w}, but it needs a part of ${cur.k}.`,'bad');
+  }
+}
+$('#drawBtn').onclick=draw;
+renderStars();
+
+const T_CSS="\n/* Layout: projector stage \u2014 big chart left, card + number bond + prompt right; teacher script in a slide-out drawer; nav bar at bottom */\n:host{\n  --paper:#F2F7FF;--sheet:#FFFFFF;--ink:#1D2752;--ink-soft:#56608A;--line:#C9D6EE;\n  --crayon-yellow:#FFD23F;--crayon-orange:#FF8A3D;--teal:#18A999;--berry:#E0457B;--sky:#3D7BE0;--cell:#F7FAFF;\n  --notes:#FFF6D1;\n  --display:\"Baloo 2\",\"Trebuchet MS\",system-ui,sans-serif;\n  --body:\"Andika\",\"Comic Sans MS\",system-ui,sans-serif;\n  color-scheme:light;\n}\n*{box-sizing:border-box}\n.tbody{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.4;\n  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px}\n.app{min-height:100vh;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 0;gap:12px}\n.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}\n.brand{font-family:var(--display);font-weight:800;font-size:26px;line-height:1}\n.brand span{color:var(--crayon-orange)}\n.brand small{display:block;font-family:var(--body);font-weight:400;font-size:14px;color:var(--ink-soft)}\n.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}\n.tbtn{font-family:var(--display);font-weight:800;font-size:17px;border:3px solid var(--ink);background:#fff;color:var(--ink);border-radius:12px;padding:4px 14px;cursor:pointer}\n.tbtn[aria-pressed=\"true\"]{background:var(--ink);color:#fff}\n.timer{font-variant-numeric:tabular-nums}\n.stage{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:center;padding-bottom:12px}\n.stage.full{grid-template-columns:1fr}\n@media (max-width:900px){.stage{grid-template-columns:1fr}}\n.panel{background:var(--sheet);border:3px solid var(--ink);border-radius:26px;padding:20px;box-shadow:0 7px 0 var(--ink);min-width:0}\n.chart{display:grid;grid-template-columns:repeat(10,minmax(30px,1fr));gap:5px;min-width:320px}\n.chart-wrap{overflow-x:auto}\n.cell{aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);border-radius:10px;background:var(--cell);font-family:var(--display);font-weight:600;font-size:clamp(11px,1.35vw,22px);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;transition:background .3s,box-shadow .3s,opacity .3s}\n.cell .tot{display:none;font-weight:800}\n.cell.yellow{background:var(--crayon-yellow);border-color:var(--ink)}\n.cell.yellow .tot{display:block}\n.cell.hl{box-shadow:inset 0 0 0 4px var(--sky);background:#E3EDFF}\n.cell.yellow.hl{background:var(--crayon-yellow)}\n.chart.dim .cell:not(.hl):not(.yellow){opacity:.35}\n.right{display:flex;flex-direction:column;gap:20px;min-width:0}\n.eyebrow{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky)}\n.prompt{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.2vw,46px);line-height:1.1;margin:0;text-wrap:balance}\n.sub{font-size:clamp(18px,1.6vw,24px);color:var(--ink-soft);margin:0}\n.flash{display:flex;align-items:center;gap:26px;flex-wrap:wrap}\n.card{font-family:var(--display);font-weight:800;font-size:clamp(56px,6vw,92px);line-height:1;background:#fff;border:4px solid var(--ink);border-radius:20px;padding:14px 30px;box-shadow:8px 8px 0 var(--sky);transform:rotate(-2deg)}\n.bond{display:grid;grid-template-columns:auto 60px auto;grid-template-rows:auto auto;align-items:center;row-gap:18px}\n.bond .b{width:clamp(64px,6vw,92px);height:clamp(64px,6vw,92px);border:4px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(30px,3vw,46px);background:#fff;transition:background .3s}\n.bond .whole{grid-row:1/3}\n.bond .p1{grid-row:1;grid-column:3}.bond .p2{grid-row:2;grid-column:3}\n.bond svg{grid-row:1/3;grid-column:2;width:60px;height:100%}\n.bond .b.lit{background:var(--crayon-yellow);animation:pop .4s}\n@keyframes pop{50%{transform:scale(1.15)}}\n.sents{display:flex;flex-direction:column;gap:6px;font-family:var(--display);font-weight:800;font-size:clamp(32px,3.4vw,52px);line-height:1.1}\n.sents div{animation:slide .4s ease-out}\n@keyframes slide{from{transform:translateX(-14px);opacity:.2}to{transform:none;opacity:1}}\n.shh{display:flex;align-items:center;gap:16px;background:#FDE7EF;border:3px solid var(--berry);border-radius:18px;padding:12px 18px;font-family:var(--display);font-weight:800;font-size:clamp(22px,2.2vw,32px);color:var(--berry)}\n.shh svg{flex:none;width:56px;height:56px}\n.boardlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}\n@media (max-width:600px){.boardlist{grid-template-columns:1fr}}\n.boardlist div{background:var(--cell);border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-family:var(--display);font-weight:800;font-size:clamp(22px,2.2vw,32px);line-height:1.15}\n.qs{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}\n.qs li{background:var(--cell);border:2px solid var(--line);border-radius:16px;padding:12px 16px;font-size:clamp(20px,1.8vw,28px)}\n.how{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}\n.how li{display:flex;gap:14px;align-items:center;font-size:clamp(20px,1.9vw,30px);font-weight:700}\n.how li b{flex:none;width:46px;height:46px;border-radius:50%;background:var(--crayon-orange);color:#fff;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:24px}\n.title-hero{display:flex;flex-direction:column;gap:16px;align-items:flex-start}\n.title-hero h1{font-family:var(--display);font-weight:800;font-size:clamp(54px,8vw,120px);line-height:.95;margin:0}\n.title-hero h1 span{color:var(--crayon-orange)}\n.pill{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:4px 14px;font-size:16px}\n/* nav */\n.nav{position:sticky;bottom:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:#fff;margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}\n.nbtn{font-family:var(--display);font-weight:800;font-size:20px;border:3px solid #fff;background:transparent;color:#fff;border-radius:12px;padding:4px 18px;cursor:pointer}\n.nbtn.go{background:var(--crayon-yellow);color:var(--ink);border-color:var(--crayon-yellow)}\n.nbtn:disabled{opacity:.35}\n.dots{display:flex;gap:4px;flex:1;flex-wrap:wrap;align-items:center;min-width:0}\n.dots button{width:14px;height:14px;border-radius:50%;border:2px solid #8E9AD0;background:transparent;padding:0;cursor:pointer}\n.dots button.past{background:#8E9AD0}\n.dots button.on{background:var(--crayon-yellow);border-color:var(--crayon-yellow);transform:scale(1.25)}\n.dots i{width:10px}\n.count{font-variant-numeric:tabular-nums;color:#C8D2F5;font-size:15px}\n/* notes drawer */\n.notes{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));width:min(420px,calc(100vw - 24px));background:var(--notes);border:3px solid var(--ink);border-radius:20px;box-shadow:0 8px 0 var(--ink);padding:18px;overflow:auto;z-index:20;font-size:17px}\n.notes h3{margin:0 0 4px;font-family:var(--display);font-size:22px}\n.notes .tag{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);font-weight:700}\n.notes dl{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;margin:12px 0}\n.notes dt{font-weight:700}\n.notes dt.s{color:var(--teal)}\n.notes dd{margin:0}\n.notes .tip{background:#fff;border-radius:12px;padding:10px 12px;border:2px dashed var(--ink-soft);font-size:15px}\n.cross-note{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.2vw,32px);color:var(--teal)}\n@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}\n\n.live{font-size:15px;border-radius:999px;padding:4px 12px;border:2px solid var(--ink-soft);color:var(--ink-soft)}\n.live.on{border-color:var(--teal);background:#E2F7F3;color:#0E7F72}\n";
+const T_HTML="<div class=\"tbody\">\n\n<div class=\"app\">\n  <div class=\"bar\">\n    <div class=\"brand\">Fact <span>Finders</span><small>Lesson 38 \u00b7 Concept Development \u00b7 Grade 1 Module 1</small></div>\n    <div class=\"tools\">\n      <span class=\"live\" id=\"liveChip\">Not syncing</span>\n      <button class=\"tbtn\" id=\"liveBtn\" aria-pressed=\"true\" hidden>Students follow: On</button>\n      <button class=\"tbtn timer\" id=\"timer\" title=\"Start or pause a 33-minute timer\">33:00</button>\n      <button class=\"tbtn\" id=\"notesBtn\" aria-pressed=\"false\">Script (N)</button>\n    </div>\n  </div>\n  <main class=\"stage\" id=\"stage\"></main>\n  <nav class=\"nav\">\n    <button class=\"nbtn\" id=\"prev\">\u25c0 Back</button>\n    <div class=\"dots\" id=\"dots\"></div>\n    <span class=\"count\" id=\"count\"></span>\n    <button class=\"nbtn go\" id=\"next\">Next \u25b6</button>\n  </nav>\n</div>\n<aside class=\"notes\" id=\"notes\" hidden></aside>\n\n</div>";
+function startTeacher(root){
+
+const $=s=>root.querySelector(s);const M="−";
+const P=[{w:7,k:4,d:3},{w:8,k:4,d:4},{w:9,k:4,d:5},{w:9,k:5,d:4}];
+P.forEach(p=>{p.cells=[];p.cells.push([p.k,p.d]);if(p.d!==p.k)p.cells.push([p.d,p.k]);});
+
+/* ----- build slide list ----- */
+const S=[];
+S.push({kind:'title',group:'start',notes:{tag:'Before you begin',title:'Materials',lines:[],tip:'Teacher: projected addition chart, subtraction expression cards. Students: addition chart, subtraction expression cards per group, yellow crayon, personal white board. Students can follow along on their Fact Finders page (Missions tab).'}});
+S.push({kind:'warm',group:'start',notes:{tag:'Open',title:'Talk about the chart',lines:[
+ ['T','(Project addition chart.) How did this addition chart help us with our addition facts?'],
+ ['S','(Responses will vary.) All the +1 addends are in the same column. → The rows start with the same part. → The totals made a staircase. → The ones near each other are related, like 4 + 3 is 7, and underneath we see 5 + 3; that\'s one more—it\'s 8.']]}});
+P.forEach((p,pi)=>{
+  const{w,k,d}=p;const g='p'+pi;
+  const pair=p.cells.map(([a,b])=>`${a} + ${b}`).join(' → ');
+  S.push({kind:'prob',p:pi,ph:0,group:g,notes:{tag:`Card ${pi+1} of 4`,title:`${w} ${M} ${k}`,lines:[['T',`(Hold up subtraction expression card ${w} ${M} ${k}.) Write a number bond and leave the missing part empty for now.`],['S','(Write number bond.)']]}});
+  S.push({kind:'prob',p:pi,ph:1,group:g,notes:{tag:`Card ${pi+1}`,title:'The whole',lines:[['T','What is the whole?'],['S',`${w}.`]]}});
+  S.push({kind:'prob',p:pi,ph:2,group:g,notes:{tag:`Card ${pi+1}`,title:'The known part',lines:[['T','The known part?'],['S',`${k}.`]]}});
+  S.push({kind:'prob',p:pi,ph:3,group:g,notes:{tag:`Card ${pi+1}`,title:`Parts of ${k}`,lines:[['T',`Which of the addition problems on your chart have a part that is ${k}? Talk to your partner.`],['S',`The ones here, going across. → It's the row that starts with ${k} + 0. → There is one here, too, going down. → It starts with 1 + ${k}.`]],tip:pi===3?'Students may notice the yellow squares from 9 − 4 are already in the 5 row. Let them make that connection: same parts, same whole.':''}});
+  S.push({kind:'prob',p:pi,ph:4,group:g,notes:{tag:`Card ${pi+1}`,title:'Same total',lines:[['T',`The chart tells the parts but not the totals. Which of those problems have the same total as ${w} ${M} ${k}? Don't call out the answer.`],['S',`(Wait for the signal.) ${pair}.`]]}});
+  S.push({kind:'prob',p:pi,ph:5,group:g,notes:{tag:`Card ${pi+1}`,title:'Color it yellow',lines:[['T',`Let's color in ${p.cells.map(([a,b])=>`${a} + ${b}`).join(' and ')} on our chart with yellow and fill in our number bond with the missing part.`],['T','Let\'s also color our totals yellow.'],['S','(Color in the chart and complete the number bond.)']],tip:p.cells.length===1?'This is a double, so there is only one square to color.':''}});
+  S.push({kind:'prob',p:pi,ph:6,group:g,notes:{tag:`Card ${pi+1}`,title:'Write the sentences',lines:[['T','Write the subtraction number sentence from the card we started with. Write the addition number sentence that helped us solve it.'],['S',`(Write ${w} ${M} ${k} = ${d} and ${p.cells[0][0]} + ${p.cells[0][1]} = ${w}.)`]],tip:'Record the number sentences on the board. They are saved on the next slide for the Student Debrief.'}});
+});
+S.push({kind:'board',group:'end',notes:{tag:'Wrap up',title:'Our board',lines:[],tip:'Point to the sequence 7 − 4, 8 − 4, 9 − 4, 9 − 5. Ask: What do you notice about these problems? Where are the helpful addition facts on your chart? How can solving the first one help you solve the next? The yellow squares make a cross centered on 4 + 4.'}});
+S.push({kind:'ps',group:'end',notes:{tag:'Problem Set · 10 minutes',title:'Launch the Card Draw',lines:[],tip:'Students open the Card Draw tab on their Fact Finders page. They pick a card, find the related addition fact on the chart and shade it orange, then write the subtraction sentence and a number bond. At least 6 turns. Problems that don\'t name a method can be solved with RDW.'}});
+S.push({kind:'debrief',group:'end',notes:{tag:'Student Debrief · 10 minutes',title:'Discuss',lines:[],tip:'Have partners compare Problem Set answers first. Use any combination of the questions. Watch for students who put totals in the wrong place on the chart.'}});
+
+/* ----- chart ----- */
+function chartHTML(yellow,hlK){
+  let h='';
+  for(let a=1;a<=10;a++)for(let b=0;b<=10-a;b++){
+    const key=a+','+b,y=yellow.has(key),hl=hlK!=null&&(a===hlK||b===hlK);
+    h+=`<div class="cell${y?' yellow':''}${hl?' hl':''}" style="grid-row:${a};grid-column:${b+1}"><span>${a} + ${b}</span><span class="tot">= ${a+b}</span></div>`;
+  }
+  return `<div class="chart-wrap"><div class="chart${hlK!=null?' dim':''}">${h}</div></div>`;
+}
+function yellowAt(i){
+  const set=new Set();
+  for(let j=0;j<=i;j++){const s=S[j];if(s.kind==='prob'&&s.ph>=5)P[s.p].cells.forEach(([a,b])=>set.add(a+','+b));}
+  if(i>=S.findIndex(s=>s.kind==='board'))P.forEach(p=>p.cells.forEach(([a,b])=>set.add(a+','+b)));
+  return set;
+}
+const LINES=`<svg viewBox="0 0 60 100" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="50" x2="60" y2="20" stroke="#1D2752" stroke-width="4"/><line x1="0" y1="50" x2="60" y2="80" stroke="#1D2752" stroke-width="4"/></svg>`;
+function bond(w,p1,p2,lit){return `<div class="bond"><div class="b whole">${w}</div>${LINES}<div class="b p1">${p1}</div><div class="b p2${lit?' lit':''}">${p2}</div></div>`;}
+const SHH=`<svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="25" fill="#fff" stroke="#E0457B" stroke-width="4"/><circle cx="20" cy="23" r="3" fill="#1D2752"/><circle cx="36" cy="23" r="3" fill="#1D2752"/><path d="M20 38h16" stroke="#1D2752" stroke-width="4" stroke-linecap="round"/><rect x="25" y="28" width="6" height="20" rx="3" fill="#FFD23F" stroke="#1D2752" stroke-width="2"/></svg>`;
+
+/* ----- render ----- */
+let i=0;
+function render(){
+  const s=S[i],st=$('#stage');st.className='stage';
+  const Y=yellowAt(i);
+  if(s.kind==='title'){
+    st.classList.add('full');
+    st.innerHTML=`<div class="panel title-hero"><span class="pill">Concept Development · 33 minutes</span><h1>Fact <span>Finders</span></h1><p class="sub" style="font-size:clamp(22px,2.4vw,34px);color:var(--ink)">We can use our <b>addition chart</b> to solve <b>subtraction</b> problems.</p><p class="sub">Get out your addition chart and a yellow crayon.</p></div>`;
+  }else if(s.kind==='warm'){
+    st.innerHTML=`<div class="panel">${chartHTML(Y,null)}</div><div class="right"><div class="eyebrow">Remember this chart?</div><h2 class="prompt">How did this addition chart help us with our addition facts?</h2><p class="sub">Turn and talk with your partner.</p></div>`;
+  }else if(s.kind==='prob'){
+    const p=P[s.p],ph=s.ph;
+    const whole=ph>=1?p.w:'',part=ph>=2?p.k:'',miss=ph>=5?p.d:'';
+    const prompts=[
+      ['Write a number bond.','Leave the missing part empty for now.'],
+      ['What is the whole?',''],
+      ['What is the known part?',''],
+      [`Which addition problems on your chart have a part that is ${p.k}?`,'Talk to your partner.'],
+      [`Which of those have the same total as ${p.w} ${M} ${p.k}?`,''],
+      ['Color them yellow!','Color the totals yellow too. Fill in the missing part.'],
+      ['Write the number sentences.','The subtraction from the card, and the addition that helped.']
+    ][ph];
+    let extra='';
+    if(ph===4)extra=`<div class="shh">${SHH}<span>Don't call it out! Wait for the signal.</span></div>`;
+    if(ph===6)extra=`<div class="sents"><div>${p.w} ${M} ${p.k} = ${p.d}</div>${p.cells.map(([a,b])=>`<div style="color:var(--ink-soft)">${a} + ${b} = ${p.w}</div>`).join('')}</div>`;
+    st.innerHTML=`<div class="panel">${chartHTML(Y,ph>=3&&ph<=4?p.k:null)}</div>
+      <div class="right"><div class="eyebrow">Card ${s.p+1} of 4</div>
+      <div class="flash"><div class="card">${p.w} ${M} ${p.k}</div>${bond(whole,part,miss,ph===5)}</div>
+      <div><h2 class="prompt">${prompts[0]}</h2>${prompts[1]?`<p class="sub">${prompts[1]}</p>`:''}</div>${extra}</div>`;
+  }else if(s.kind==='board'){
+    st.innerHTML=`<div class="panel">${chartHTML(Y,null)}</div><div class="right"><div class="eyebrow">Our board</div>
+      <div class="boardlist">${P.map(p=>`<div>${p.w} ${M} ${p.k} = ${p.d}<br><span style="color:var(--ink-soft)">${p.cells[0][0]} + ${p.cells[0][1]} = ${p.w}</span></div>`).join('')}</div>
+      <h2 class="prompt">What do you notice about our yellow squares?</h2>
+      <p class="cross-note" id="crossNote" hidden>They make a cross! Each card is right next to the one before.</p>
+      <button class="tbtn" id="crossBtn" style="align-self:flex-start">Reveal the pattern</button></div>`;
+    $('#crossBtn').onclick=()=>{$('#crossNote').hidden=false;$('#crossBtn').hidden=true;};
+  }else if(s.kind==='ps'){
+    st.innerHTML=`<div class="panel">${chartHTML(new Set(),null)}</div>
+      <div class="right"><div class="eyebrow">Your turn · Card Draw</div><h2 class="prompt">Open the Card Draw on your Fact Finders page.</h2>
+      <ol class="how"><li><b>1</b>Pick a subtraction card.</li><li><b>2</b>Find the related addition fact on the chart. Shade it orange.</li><li><b>3</b>Write the subtraction sentence and a number bond.</li><li><b>4</b>Do at least 6 turns!</li></ol>
+      <div class="flash"><div class="card" style="box-shadow:8px 8px 0 var(--crayon-orange);font-size:clamp(40px,4vw,64px)">8 ${M} 6</div><span class="prompt" style="font-size:clamp(26px,2.6vw,40px)">8 ${M} 6 = 2</span></div></div>`;
+    st.querySelectorAll('.cell').forEach(c=>{if(c.textContent.startsWith('6 + 2')){c.style.background='var(--crayon-orange)';c.style.color='#fff';c.style.borderColor='var(--ink)';c.querySelector('.tot').style.display='block';}});
+  }else if(s.kind==='debrief'){
+    st.classList.add('full');
+    st.innerHTML=`<div class="panel"><div class="eyebrow">Let's talk</div><h2 class="prompt" style="margin-bottom:16px">Fact Finders Debrief</h2><ul class="qs">
+      <li>Look at 7 ${M} 4, 8 ${M} 4, 9 ${M} 4 and 9 ${M} 5. What do you notice? How can solving the first one help you solve the next?</li>
+      <li>Look at your work. What pattern do you notice on your chart? How are these subtraction facts related?</li>
+      <li>What is another set of subtraction facts that would make a cross on your chart?</li>
+      <li>Was it tricky to put the totals in the right place? Why?</li>
+      <li>What tool did we use in a new way today? How did it help you?</li>
+      <li>How did the Application Problem connect to today's lesson?</li></ul></div>`;
+  }
+  renderNotes();renderNav();
+  if(window.__broadcast)window.__broadcast({kind:s.kind,p:s.p??null,ph:s.ph??null});
+}
+function renderNotes(){
+  const n=S[i].notes,box=$('#notes');
+  box.innerHTML=`<div class="tag">${n.tag}</div><h3>${n.title}</h3>${n.lines.length?`<dl>${n.lines.map(([who,t])=>`<dt class="${who==='S'?'s':''}">${who}:</dt><dd>${t}</dd>`).join('')}</dl>`:''}${n.tip?`<div class="tip">${n.tip}</div>`:''}
+  <div class="tip" style="margin-top:10px;border-style:solid;border-color:var(--line)"><b>Keys:</b> → or Space = next, ← = back, N = script</div>`;
+}
+function renderNav(){
+  const d=$('#dots');d.innerHTML='';let last=null;
+  S.forEach((s,j)=>{if(last&&s.group!==last)d.appendChild(document.createElement('i'));last=s.group;
+    const b=document.createElement('button');b.className=j===i?'on':j<i?'past':'';b.setAttribute('aria-label','Go to step '+(j+1));b.onclick=()=>{i=j;render();};d.appendChild(b);});
+  $('#count').textContent=`${i+1} / ${S.length}`;
+  $('#prev').disabled=i===0;$('#next').disabled=i===S.length-1;
+}
+$('#prev').onclick=()=>{if(i>0){i--;render();}};
+$('#next').onclick=()=>{if(i<S.length-1){i++;render();}};
+function toggleNotes(){const n=$('#notes');n.hidden=!n.hidden;$('#notesBtn').setAttribute('aria-pressed',!n.hidden);}
+$('#notesBtn').onclick=toggleNotes;
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();$('#next').click();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();$('#prev').click();}
+  else if(e.key==='n'||e.key==='N')toggleNotes();
+});
+/* timer */
+let left=33*60,tick=null;
+function fmt(){$('#timer').textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;}
+$('#timer').onclick=()=>{if(tick){clearInterval(tick);tick=null;$('#timer').setAttribute('aria-pressed','false');}else{tick=setInterval(()=>{if(left>0){left--;fmt();}else{clearInterval(tick);tick=null;}},1000);$('#timer').setAttribute('aria-pressed','true');}};
+window.__teacherRender=render;
+render();
+
+}
+
+
+/* ---------- live sync with the teacher view ---------- */
+var LIVE=null;
+const PHMAP=[0,0,0,1,2,3,4];
+function allowed(i){
+  if(!LIVE)return DONE;
+  if(LIVE.kind==='prob'){if(i<LIVE.p)return DONE;if(i>LIVE.p)return -1;return PHMAP[LIVE.ph]??DONE;}
+  if(LIVE.kind==='title'||LIVE.kind==='warm')return -1;
+  return DONE;
+}
+function showTab(id){const b=document.getElementById(id);document.querySelectorAll('.tabbtn').forEach(x=>x.setAttribute('aria-selected',x===b));$('#sec-m').hidden=id!=='tab-m';$('#sec-p').hidden=id!=='tab-p';}
+let lastKind=null,lastP=null;
+function applyLive(state){
+  const fresh=state&&state.live&&typeof state.at==='number'&&Date.now()-state.at<4*3600e3;
+  LIVE=fresh?state:null;
+  $('#sLive').hidden=!LIVE;
+  const psOpen=!LIVE||['ps','debrief','board'].includes(LIVE.kind);
+  $('#pLock').hidden=psOpen;
+  $('#sec-p').querySelector('.board').hidden=!psOpen;
+  $('#sec-p').querySelector('.part-head').hidden=!psOpen;
+  if(LIVE){
+    if(LIVE.kind==='prob'&&LIVE.p!==lastP)mi=LIVE.p;
+    if(LIVE.kind!==lastKind){
+      if(LIVE.kind==='ps')showTab('tab-p');
+      else if(['title','warm','prob'].includes(LIVE.kind))showTab('tab-m');
+    }
+    lastKind=LIVE.kind;lastP=LIVE.kind==='prob'?LIVE.p:lastP;
+  }else{lastKind=null;}
+  renderMission();
+}
+
+(async function boot(){
+  const wantTeacher=location.hash==='#teacher';
+  const use=window.claude&&window.claude.use?window.claude.use.bind(window.claude):null;
+  let teacherOn=false;
+  function openTeacher(){
+    teacherOn=true;
+    $('#studentView').hidden=true;
+    const host=$('#teacherHost');host.hidden=false;
+    const root=host.attachShadow({mode:'open'});
+    root.innerHTML=`<style>${T_CSS}</style>${T_HTML}`;
+    startTeacher(root);
+    return root;
+  }
+  let troot=wantTeacher?openTeacher():null;
+  if(!use)return;
+  const [user,db]=await Promise.all([use('user').catch(()=>null),use('db').catch(()=>null)]);
+  const canEdit=user?await user.canEdit().catch(()=>false):false;
+  if(teacherOn&&user&&!canEdit){location.hash='';location.reload();return;}
+  if(!db)return;
+  const ref=db.doc('live/class');
+  if(teacherOn){
+    const chip=troot.querySelector('#liveChip'),btn=troot.querySelector('#liveBtn');
+    let on=true,pending=null,busy=false,last=null;
+    btn.hidden=false;
+    const flush=async()=>{
+      if(busy||!pending)return;busy=true;const d=pending;pending=null;
+      try{await ref.set(d);chip.textContent=on?'Students following live':'Students working on their own';chip.className='live'+(on?' on':'');}
+      catch(e){chip.textContent='Not syncing';chip.className='live';}
+      busy=false;if(pending)flush();
+    };
+    const send=()=>{if(!last)return;pending={...last,live:on,at:Date.now()};flush();};
+    window.__broadcast=st=>{last=st;send();};
+    btn.onclick=()=>{on=!on;btn.textContent='Students follow: '+(on?'On':'Off');btn.setAttribute('aria-pressed',on);send();};
+    window.__teacherRender&&window.__teacherRender();
+  }else{
+    ref.onSnapshot(snap=>applyLive(snap.exists?snap.data():null),()=>applyLive(null));
+  }
+})();
+
+</script>
+
+</body></html>
