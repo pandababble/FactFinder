@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Fact Finders (Copy)</title>
+<title>Fact Finders</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
@@ -218,6 +218,11 @@ section.part{display:flex;flex-direction:column;gap:16px}
 </div>
 
 <div id="teacherHost" hidden></div>
+
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <script>
 const $=s=>document.querySelector(s);
 const MINUS="−";
@@ -468,7 +473,7 @@ P.forEach((p,pi)=>{
   S.push({kind:'prob',p:pi,ph:2,group:g,notes:{tag:`Card ${pi+1}`,title:'The known part',lines:[['T','The known part?'],['S',`${k}.`]]}});
   S.push({kind:'prob',p:pi,ph:3,group:g,notes:{tag:`Card ${pi+1}`,title:`Parts of ${k}`,lines:[['T',`Which of the addition problems on your chart have a part that is ${k}? Talk to your partner.`],['S',`The ones here, going across. → It's the row that starts with ${k} + 0. → There is one here, too, going down. → It starts with 1 + ${k}.`]],tip:pi===3?'Students may notice the yellow squares from 9 − 4 are already in the 5 row. Let them make that connection: same parts, same whole.':''}});
   S.push({kind:'prob',p:pi,ph:4,group:g,notes:{tag:`Card ${pi+1}`,title:'Same total',lines:[['T',`The chart tells the parts but not the totals. Which of those problems have the same total as ${w} ${M} ${k}? Don't call out the answer.`],['S',`(Wait for the signal.) ${pair}.`]]}});
-  S.push({kind:'prob',p:pi,ph:5,group:g,notes:{tag:`Card ${pi+1}`,title:'Color it yellow',lines:[['T',`Let's color in ${p.cells.map(([a,b])=>`${a} + ${b}`).join(' and ')} on our chart with yellow and fill in our number bond with the missing part.`],['T','Let\'s also color our totals yellow.'],['S','(Color in the chart and complete the number bond.)']],tip:p.cells.length===1?'This is a double, so there is only one square to color.':''}});
+  S.push({kind:'prob',p:pi,ph:5,group:g,notes:{tag:`Card ${pi+1}`,title:'Color it yellow',lines:[['T',`Let's color in ${p.cells.map(([a,b])=>`${a} +${b}`).join(' and ')} on our chart with yellow and fill in our number bond with the missing part.`],['T','Let\'s also color our totals yellow.'],['S','(Color in the chart and complete the number bond.)']],tip:p.cells.length===1?'This is a double, so there is only one square to color.':''}});
   S.push({kind:'prob',p:pi,ph:6,group:g,notes:{tag:`Card ${pi+1}`,title:'Write the sentences',lines:[['T','Write the subtraction number sentence from the card we started with. Write the addition number sentence that helped us solve it.'],['S',`(Write ${w} ${M} ${k} = ${d} and ${p.cells[0][0]} + ${p.cells[0][1]} = ${w}.)`]],tip:'Record the number sentences on the board. They are saved on the next slide for the Student Debrief.'}});
 });
 S.push({kind:'board',group:'end',notes:{tag:'Wrap up',title:'Our board',lines:[],tip:'Point to the sequence 7 − 4, 8 − 4, 9 − 4, 9 − 5. Ask: What do you notice about these problems? Where are the helpful addition facts on your chart? How can solving the first one help you solve the next? The yellow squares make a cross centered on 4 + 4.'}});
@@ -518,14 +523,14 @@ function render(){
     ][ph];
     let extra='';
     if(ph===4)extra=`<div class="shh">${SHH}<span>Don't call it out! Wait for the signal.</span></div>`;
-    if(ph===6)extra=`<div class="sents"><div>${p.w} ${M} ${p.k} = ${p.d}</div>${p.cells.map(([a,b])=>`<div style="color:var(--ink-soft)">${a} + ${b} = ${p.w}</div>`).join('')}</div>`;
+    if(ph===6)extra=`<div class="sents"><div>${p.w} ${M} ${p.k} = ${p.d}</div>${p.cells.map(([a,b])=>`<div style="color:var(--ink-soft)">${a} + ${b} =${p.w}</div>`).join('')}</div>`;
     st.innerHTML=`<div class="panel">${chartHTML(Y,ph>=3&&ph<=4?p.k:null)}</div>
       <div class="right"><div class="eyebrow">Card ${s.p+1} of 4</div>
       <div class="flash"><div class="card">${p.w} ${M} ${p.k}</div>${bond(whole,part,miss,ph===5)}</div>
       <div><h2 class="prompt">${prompts[0]}</h2>${prompts[1]?`<p class="sub">${prompts[1]}</p>`:''}</div>${extra}</div>`;
   }else if(s.kind==='board'){
     st.innerHTML=`<div class="panel">${chartHTML(Y,null)}</div><div class="right"><div class="eyebrow">Our board</div>
-      <div class="boardlist">${P.map(p=>`<div>${p.w} ${M} ${p.k} = ${p.d}<br><span style="color:var(--ink-soft)">${p.cells[0][0]} + ${p.cells[0][1]} = ${p.w}</span></div>`).join('')}</div>
+      <div class="boardlist">${P.map(p=>`<div>${p.w}${M} ${p.k} =${p.d}<br><span style="color:var(--ink-soft)">${p.cells[0][0]} + ${p.cells[0][1]} =${p.w}</span></div>`).join('')}</div>
       <h2 class="prompt">What do you notice about our yellow squares?</h2>
       <p class="cross-note" id="crossNote" hidden>They make a cross! Each card is right next to the one before.</p>
       <button class="tbtn" id="crossBtn" style="align-self:flex-start">Reveal the pattern</button></div>`;
@@ -581,7 +586,7 @@ render();
 }
 
 
-/* ---------- live sync with the teacher view ---------- */
+/* ---------- live sync with the teacher view (Firebase Cloud Firestore) ---------- */
 var LIVE=null;
 const PHMAP=[0,0,0,1,2,3,4];
 function allowed(i){
@@ -611,45 +616,89 @@ function applyLive(state){
   renderMission();
 }
 
-(async function boot(){
-  const wantTeacher=location.hash==='#teacher';
-  const use=window.claude&&window.claude.use?window.claude.use.bind(window.claude):null;
-  let teacherOn=false;
+(function boot(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3eUKNC4E-6dSekHz5qjXL5Nu059G7wSU",
+    authDomain: "factfinders-49b12.firebaseapp.com",
+    projectId: "factfinders-49b12",
+    storageBucket: "factfinders-49b12.firebasestorage.app",
+    messagingSenderId: "800347400888",
+    appId: "1:800347400888:web:6704aac2703d4c8609e24d",
+    measurementId: "G-1L5ZB9CNQC"
+  };
+
+  window.addEventListener('hashchange', () => location.reload());
+
+  const wantTeacher = location.hash === '#teacher';
+  let teacherOn = false;
   function openTeacher(){
-    teacherOn=true;
-    $('#studentView').hidden=true;
-    const host=$('#teacherHost');host.hidden=false;
-    const root=host.attachShadow({mode:'open'});
-    root.innerHTML=`<style>${T_CSS}</style>${T_HTML}`;
+    teacherOn = true;
+    $('#studentView').hidden = true;
+    const host = $('#teacherHost');
+    host.hidden = false;
+    const root = host.attachShadow({mode:'open'});
+    root.innerHTML = `<style>${T_CSS}</style>${T_HTML}`;
     startTeacher(root);
     return root;
   }
-  let troot=wantTeacher?openTeacher():null;
-  if(!use)return;
-  const [user,db]=await Promise.all([use('user').catch(()=>null),use('db').catch(()=>null)]);
-  const canEdit=user?await user.canEdit().catch(()=>false):false;
-  if(teacherOn&&user&&!canEdit){location.hash='';location.reload();return;}
-  if(!db)return;
-  const ref=db.doc('live/class');
-  if(teacherOn){
-    const chip=troot.querySelector('#liveChip'),btn=troot.querySelector('#liveBtn');
-    let on=true,pending=null,busy=false,last=null;
-    btn.hidden=false;
-    const flush=async()=>{
-      if(busy||!pending)return;busy=true;const d=pending;pending=null;
-      try{await ref.set(d);chip.textContent=on?'Students following live':'Students working on their own';chip.className='live'+(on?' on':'');}
-      catch(e){chip.textContent='Not syncing';chip.className='live';}
-      busy=false;if(pending)flush();
+  let troot = wantTeacher ? openTeacher() : null;
+
+  let db = null;
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+  } catch (err) {
+    console.error("Firebase init failed:", err);
+  }
+  if (!db) return;
+
+  const ref = db.doc('live/class');
+  if (teacherOn) {
+    const chip = troot.querySelector('#liveChip');
+    const btn = troot.querySelector('#liveBtn');
+    let on = true, pending = null, busy = false, last = null;
+    btn.hidden = false;
+    const flush = async () => {
+      if (busy || !pending) return;
+      busy = true;
+      const d = pending;
+      pending = null;
+      try {
+        await ref.set(d);
+        chip.textContent = on ? 'Students following live' : 'Students working on their own';
+        chip.className = 'live' + (on ? ' on' : '');
+      } catch (e) {
+        console.error("Firestore write error (Make sure Firestore Database is created in Firebase Console):", e);
+        chip.textContent = 'Not syncing';
+        chip.className = 'live';
+      }
+      busy = false;
+      if (pending) flush();
     };
-    const send=()=>{if(!last)return;pending={...last,live:on,at:Date.now()};flush();};
-    window.__broadcast=st=>{last=st;send();};
-    btn.onclick=()=>{on=!on;btn.textContent='Students follow: '+(on?'On':'Off');btn.setAttribute('aria-pressed',on);send();};
-    window.__teacherRender&&window.__teacherRender();
-  }else{
-    ref.onSnapshot(snap=>applyLive(snap.exists?snap.data():null),()=>applyLive(null));
+    const send = () => {
+      if (!last) return;
+      pending = { ...last, live: on, at: Date.now() };
+      flush();
+    };
+    window.__broadcast = st => { last = st; send(); };
+    btn.onclick = () => {
+      on = !on;
+      btn.textContent = 'Students follow: ' + (on ? 'On' : 'Off');
+      btn.setAttribute('aria-pressed', on);
+      send();
+    };
+    if (window.__teacherRender) window.__teacherRender();
+  } else {
+    ref.onSnapshot(
+      snap => applyLive(snap.exists ? snap.data() : null),
+      err => {
+        console.error("Firestore read error:", err);
+        applyLive(null);
+      }
+    );
   }
 })();
-
 </script>
-
 </body></html>
